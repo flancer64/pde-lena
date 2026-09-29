@@ -48,6 +48,8 @@ The script generates the Person secret and PostgreSQL password in the private
 environment file. Set the Telegram API ID and hash there without logging them;
 the production TDLib directory is `/home/pde-lena/data/telegram/tdlib`.
 Telegram setup is completed by the Person through the protected web page.
+The production web process uses cleartext HTTP/2 on loopback for Apache's h2c
+proxy; local `.env.example` uses HTTP/1 for direct development access.
 
 The manual GitHub Actions workflow `.github/workflows/deploy.yml` requires
 repository variables `HOST`, `USER`, `HOME_DIR`, and `SERVICE`, plus a scoped

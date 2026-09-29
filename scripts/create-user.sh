@@ -204,7 +204,7 @@ TEQFW_DB__USER=$DB_USER
 
 TEQFW_WEB__HOST=127.0.0.1
 TEQFW_WEB__PORT=$PORT
-TEQFW_WEB__TYPE=http
+TEQFW_WEB__TYPE=http2
 EOF
         install_private_env "$TEMP_FILE"
     fi
@@ -521,6 +521,7 @@ main() {
     prepare_apache
     sync_env PDE_RUNTIME__BASE_URL "$BASE_URL"
     sync_env TEQFW_WEB__PORT "$PORT"
+    sync_env TEQFW_WEB__TYPE http2
     echo "Host provisioned for $APP_USER. Run the GitHub Actions deployment workflow."
 }
 if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
