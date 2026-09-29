@@ -38,51 +38,21 @@ jobs:
             exit 1
           fi
 
-      - name: Configure read-only dependency access
-        env:
-          PDE_SDK_DEPLOY_KEY: ${{ secrets.PDE_SDK_DEPLOY_KEY }}
-          PDE_RUNTIME_DEPLOY_KEY: ${{ secrets.PDE_RUNTIME_DEPLOY_KEY }}
-          PDE_ECHO_DEPLOY_KEY: ${{ secrets.PDE_ECHO_DEPLOY_KEY }}
-          PDE_TELEGRAM_DEPLOY_KEY: ${{ secrets.PDE_TELEGRAM_DEPLOY_KEY }}
-        run: |
-          set -euo pipefail
-          install -d -m 0700 "$HOME/.ssh"
-          curl -fsSL https://api.github.com/meta \
-            | jq -r '.ssh_keys[] | "github.com " + .' > "$HOME/.ssh/known_hosts"
-          chmod 0600 "$HOME/.ssh/known_hosts"
-
-          declare -A keys=(
-            [pde-sdk]="$PDE_SDK_DEPLOY_KEY"
-            [pde-runtime]="$PDE_RUNTIME_DEPLOY_KEY"
-            [pde-desk-echo]="$PDE_ECHO_DEPLOY_KEY"
-            [pde-desk-telegram]="$PDE_TELEGRAM_DEPLOY_KEY"
-          )
-          for repo in pde-sdk pde-runtime pde-desk-echo pde-desk-telegram; do
-            [ -n "${keys[$repo]}" ] || { echo "Missing deploy key for $repo" >&2; exit 1; }
-            printf '%s\n' "${keys[$repo]}" > "$HOME/.ssh/$repo"
-            chmod 0600 "$HOME/.ssh/$repo"
-            alias_host="pde-${repo}.github.com"
-            cat >> "$HOME/.ssh/config" <<EOF
-          Host $alias_host
-            HostName github.com
-            HostKeyAlias github.com
-            User git
-            IdentityFile $HOME/.ssh/$repo
-            IdentitiesOnly yes
-            StrictHostKeyChecking yes
-          EOF
-            target="ssh://git@$alias_host/flancer32/$repo.git"
-            for source in "https://github.com/flancer32/$repo.git" \
-                          "ssh://git@github.com/flancer32/$repo.git" \
-                          "git@github.com:flancer32/$repo.git"; do
-              git config --global --add "url.$target.insteadOf" "$source"
-            done
-          done
-          chmod 0600 "$HOME/.ssh/config"
-
       - name: Install production dependencies
+        env:
+          GH_PAT: ${{ secrets.PDE_PACKAGES_READ_TOKEN }}
         run: |
           set -euo pipefail
+          [ -n "$GH_PAT" ] || { echo 'PDE_PACKAGES_READ_TOKEN is missing.' >&2; exit 1; }
+          AUTH="$(printf 'x-access-token:%s' "$GH_PAT" | base64 -w0)"
+          echo "::add-mask::$AUTH"
+          GIT_CONFIG_COUNT=3 \
+          GIT_CONFIG_KEY_0="url.https://github.com/.insteadOf" \
+          GIT_CONFIG_VALUE_0="ssh://git@github.com/" \
+          GIT_CONFIG_KEY_1="url.https://github.com/.insteadOf" \
+          GIT_CONFIG_VALUE_1="git@github.com:" \
+          GIT_CONFIG_KEY_2="http.https://github.com/.extraheader" \
+          GIT_CONFIG_VALUE_2="AUTHORIZATION: basic $AUTH" \
           npm ci \
             --install-links \
             --omit=dev \

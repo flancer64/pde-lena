@@ -53,10 +53,9 @@ proxy; local `.env.example` uses HTTP/1 for direct development access.
 
 The manual GitHub Actions workflow `.github/workflows/deploy.yml` requires
 repository variables `HOST`, `USER`, `HOME_DIR`, and `SERVICE`, plus a scoped
-`SSH_KEY` secret for the service account. The four private `flancer32` package
-repositories each have a read-only deploy key, stored here as
-`PDE_SDK_DEPLOY_KEY`, `PDE_RUNTIME_DEPLOY_KEY`, `PDE_ECHO_DEPLOY_KEY`, and
-`PDE_TELEGRAM_DEPLOY_KEY` secrets. The workflow installs locked production
+`SSH_KEY` secret for the service account and `PDE_PACKAGES_READ_TOKEN` with
+read access to the private `flancer32` package repositories. The workflow
+installs locked production
 dependencies, copies a release archive, runs `db:migrate`, switches the current
 release, and starts the service. Check the workflow result and the HTTPS
 endpoint after each run.
