@@ -43,7 +43,7 @@ install_private_env() {
 }
 
 usage() {
-    echo 'Usage: sudo BASE_URL=https://pde.example.org PORT=3000 [CERTBOT_EMAIL=...] ./scripts/create-user.sh'
+    echo 'Usage: sudo BASE_URL=https://pde.example.org PORT=4030 [CERTBOT_EMAIL=...] ./scripts/create-user.sh'
 }
 validate_input() {
     [ "$APP_USER" = pde-lena ] && [ "$SERVICE" = pde-lena ] &&

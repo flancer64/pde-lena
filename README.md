@@ -41,7 +41,7 @@ on the verified target VPS after checking DNS, ports 80/443, existing Apache
 configuration, and service identity:
 
 ```sh
-sudo BASE_URL=https://lena.pde.wiredgeese.com PORT=3000 ./scripts/create-user.sh
+sudo BASE_URL=https://lena.pde.wiredgeese.com PORT=4030 ./scripts/create-user.sh
 ```
 
 The script generates the Person secret and PostgreSQL password in the private
