@@ -2,14 +2,14 @@
 # Prepare the PDE host; application releases are deployed by GitHub Actions.
 set -euo pipefail
 
-APP_USER=pde-template
+APP_USER=pde-lena
 APP_HOME=/home/$APP_USER
 APP_ROOT=$APP_HOME/app/pde
 ENV_FILE=$APP_HOME/private/pde/app.env
-SERVICE=pde-template
+SERVICE=pde-lena
 DOMAIN=''
-DB_USER=pde_template
-DB_NAME=pde_template
+DB_USER=pde_lena
+DB_NAME=pde_lena
 UNIT=/etc/systemd/system/$SERVICE.service
 SUDOERS=/etc/sudoers.d/$APP_USER
 LOGROTATE=/etc/logrotate.d/$SERVICE
@@ -46,8 +46,8 @@ usage() {
     echo 'Usage: sudo BASE_URL=https://pde.example.org PORT=3000 [CERTBOT_EMAIL=...] ./scripts/create-user.sh'
 }
 validate_input() {
-    [ "$APP_USER" != pde-template ] && [ "$SERVICE" != pde-template ] &&
-        [ "$DB_USER" != pde_template ] && [ "$DB_NAME" != pde_template ] ||
+    [ "$APP_USER" = pde-lena ] && [ "$SERVICE" = pde-lena ] &&
+        [ "$DB_USER" = pde_lena ] && [ "$DB_NAME" = pde_lena ] ||
         fail 'Customize the template service account and database identity before provisioning.'
     BASE_URL=${BASE_URL:-}
     PORT=${PORT:-}
@@ -244,7 +244,7 @@ prepare_service() {
     if install_config "$UNIT" 0644 validate_unit <<EOF
 $MARKER
 [Unit]
-Description=PDE Embassy Host for Template Owner
+Description=PDE Embassy Host for Helena Sovane
 After=network-online.target
 Wants=network-online.target
 

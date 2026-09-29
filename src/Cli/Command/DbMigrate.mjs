@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @namespace Pde_Template_Cli_Command_DbMigrate
+ * @namespace Pde_Lena_Cli_Command_DbMigrate
  * @description Initializes an empty PostgreSQL database or runs the Runtime migration.
  */
 
@@ -22,7 +22,7 @@ export default function DbMigrate({config, connection, database, migration, io})
         execute: async function () {
             const startedConnection = !connection.getClient();
             if (startedConnection) await connection.init(config.get());
-            let empty;
+            let handedToDatabase = false;
             try {
                 const adapter = await connection.getDialectAdapter().describe();
                 if (adapter.id !== 'postgresql') throw new Error('This host migration command expects PostgreSQL.');
@@ -33,17 +33,24 @@ export default function DbMigrate({config, connection, database, migration, io})
                         WHERE schema.nspname = 'public' AND object.relkind IN ('r', 'p', 'v', 'm', 'f', 'S')
                     ) AS empty
                 `);
-                empty = result.rows?.[0]?.empty === true;
+                const empty = result.rows?.[0]?.empty === true;
+                if (empty) {
+                    if (startedConnection) {
+                        await connection.disconnect();
+                        handedToDatabase = true;
+                    }
+                    await database.init();
+                    try {
+                        io.write('Empty Runtime database initialized.\n');
+                    } finally {
+                        await database.destroy();
+                    }
+                } else {
+                    const migrationResult = await migration.execute();
+                    io.write(`Runtime database migration ${migrationResult.status}.\n`);
+                }
             } finally {
-                if (startedConnection) await connection.disconnect();
-            }
-            if (empty) {
-                await database.init();
-                await database.destroy();
-                io.write('Empty Runtime database initialized.\n');
-            } else {
-                const result = await migration.execute();
-                io.write(`Runtime database migration ${result.status}.\n`);
+                if (startedConnection && !handedToDatabase) await connection.disconnect();
             }
         },
     });

@@ -1,4 +1,4 @@
-name: LIVE - Build & Deploy PDE Template
+name: LIVE - Build & Deploy PDE Lena
 
 on:
   workflow_dispatch:
@@ -7,11 +7,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: live-pde-template
+  group: live-pde-lena
   cancel-in-progress: false
 
 env:
-  PRJ: pde-template
+  PRJ: pde-lena
   HOME_DIR: ${{ vars.HOME_DIR }}
   SERVICE: ${{ vars.SERVICE }}
 
@@ -33,24 +33,15 @@ jobs:
       - name: Check host identity
         run: |
           set -euo pipefail
-          if [ "$PRJ" = pde-template ] || [ "$(node -p "require('./package.json').name")" = '@pde-host/pde-template' ]; then
-            echo 'Customize the template identity before deployment.' >&2
+          if [ "$PRJ" != pde-lena ] || [ "$(node -p "require('./package.json').name")" != '@pde-host/pde-lena' ]; then
+            echo 'Unexpected host identity.' >&2
             exit 1
           fi
 
       - name: Install production dependencies
-        env:
-          GH_PAT: ${{ secrets.PDE_PACKAGES_READ_TOKEN }}
         run: |
           set -euo pipefail
-
-          AUTH="$(printf 'x-access-token:%s' "$GH_PAT" | base64 -w0)"
-          echo "::add-mask::$AUTH"
-
-          GIT_CONFIG_COUNT=1 \
-          GIT_CONFIG_KEY_0="http.https://github.com/.extraheader" \
-          GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $AUTH" \
-          npm install \
+          npm ci \
             --install-links \
             --omit=dev \
             --no-audit \

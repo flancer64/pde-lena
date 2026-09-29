@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @namespace Pde_Template_Cli_Plugin
+ * @namespace Pde_Lena_Cli_Plugin
  * @description Applies the host default logging policy after configuration has loaded.
  */
 

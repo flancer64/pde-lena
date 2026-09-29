@@ -1,8 +1,8 @@
 {
-  "name": "@pde-host/pde-template",
+  "name": "@pde-host/pde-lena",
   "version": "0.1.0",
   "private": true,
-  "description": "Personal Digital Embassy for Template Owner.",
+  "description": "Personal Digital Embassy for Helena Sovane.",
   "type": "module",
   "files": [
     ".env.example",
@@ -19,7 +19,7 @@
       "di": {
         "namespaces": [
           {
-            "prefix": "Pde_Template_",
+            "prefix": "Pde_Lena_",
             "path": "./src",
             "ext": ".mjs"
           }
@@ -29,7 +29,7 @@
         "command": {
           "default": "web:start"
         },
-        "plugin": "Pde_Template_Cli_Plugin$",
+        "plugin": "Pde_Lena_Cli_Plugin$",
         "container": {
           "configurator": "./bootstrap/di-config.mjs"
         }
@@ -39,13 +39,14 @@
   "scripts": {
     "db:migrate": "teq db:migrate",
     "start": "teq web:start",
+    "test": "node --test",
     "typecheck": "tsc -p jsconfig.json"
   },
   "dependencies": {
-    "@flancer32/pde-desk-echo": "github:flancer32/pde-desk-echo#main",
-    "@flancer32/pde-desk-telegram": "github:flancer32/pde-desk-telegram#main",
-    "@flancer32/pde-runtime": "github:flancer32/pde-runtime#main",
-    "@flancer32/pde-sdk": "github:flancer32/pde-sdk#main",
+    "@flancer32/pde-desk-echo": "git+https://github.com/flancer32/pde-desk-echo.git#main",
+    "@flancer32/pde-desk-telegram": "git+https://github.com/flancer32/pde-desk-telegram.git#main",
+    "@flancer32/pde-runtime": "git+https://github.com/flancer32/pde-runtime.git#main",
+    "@flancer32/pde-sdk": "git+https://github.com/flancer32/pde-sdk.git#main",
     "@teqfw/cli": "^2.2.0",
     "pg": "^8.23.0",
     "@teqfw/di": "^2.11.0"
